@@ -11,14 +11,17 @@ class Data extends ExportEloquent
             [
                 'id' => 1,
                 'number' => 'Act123456',
-                'name' => '张三',
                 'phone' => 13458645501,
+                'name' => '张三',
+                'phone1' => 13458645501,
             ],
             [
                 'id' => 2,
                 'number' => 'Act11123456',
                 'name' => '张1三',
                 'phone' => 13458645502,
+                'phone1' => 13458645501,
+
             ]
         ];
     }
@@ -35,6 +38,7 @@ class Data extends ExportEloquent
             'number' => "编号",
             'name' => "姓名",
             'phone' => "电话",
+            'phone1' => "电话2",
         ];
     }
 }

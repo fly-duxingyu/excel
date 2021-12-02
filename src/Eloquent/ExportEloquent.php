@@ -36,9 +36,6 @@ abstract class ExportEloquent implements QueryDataInterface, StorageDataInterfac
                 $value = array_values($value);
                 for ($i = 0; $i < $keyIndex; $i++) {
                     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
                 }
             }
             $objPHPExcel->getActiveSheet()->setTitle('导出');
