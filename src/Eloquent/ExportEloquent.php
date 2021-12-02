@@ -39,6 +39,15 @@ abstract class ExportEloquent implements QueryDataInterface, StorageDataInterfac
                 $key += 1;
                 $value = array_values($value);
                 for ($i = 0; $i < $keyIndex; $i++) {
+                    $url = parse_url($value[$i]);
+                    if (!empty($url['scheme'])) {
+                        $obj = $objPHPExcel->setActiveSheetIndex()->setCellValue($this->letter[$i] . $key, $value[$i]);
+                        //设置单元格超链接
+                        $obj->getCell($this->letter[$i] . $key)->getHyperlink()->setUrl($value[$i]);
+                        //设置单元格样式
+                        $obj->getStyle($this->letter[$i] . $key)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER)->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                        continue;
+                    }
                     //设置值和样式
                     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i])->getStyle($this->letter[$i] . $key)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER)->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                 }

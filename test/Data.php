@@ -15,7 +15,7 @@ class Data extends ExportEloquent
             ],
             [
                 'id' => 2,
-                'number' => 'Act11123456',
+                'number' => 'http://www.baidu.com',
                 'phone1' => 13458645501,
 
             ]
