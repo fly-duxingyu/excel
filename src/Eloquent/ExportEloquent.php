@@ -7,6 +7,7 @@ use Duxingyu\Excel\Contracts\QueryDataInterface;
 use Duxingyu\Excel\Contracts\StorageDataInterface;
 use PHPExcel;
 use PHPExcel_IOFactory;
+use PHPExcel_Style_Alignment;
 
 /**
  *导出
@@ -38,7 +39,8 @@ abstract class ExportEloquent implements QueryDataInterface, StorageDataInterfac
                 $key += 1;
                 $value = array_values($value);
                 for ($i = 0; $i < $keyIndex; $i++) {
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
+                    //设置值和样式
+                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i])->getStyle($this->letter[$i] . $key)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER)->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                 }
             }
             $objPHPExcel->getActiveSheet()->setTitle('导出');

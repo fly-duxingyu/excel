@@ -6,6 +6,7 @@ require_once __DIR__ . '\..\Classes\PHPExcel.php';
 require_once __DIR__ . '\..\Classes\PHPExcel\IOFactory.php';
 require_once __DIR__ . '\..\Classes\PHPExcel\Reader\Excel5.php';
 require_once __DIR__ . '\..\Classes\PHPExcel\Reader\Excel2007.php';
+require_once __DIR__ . '\..\Classes\PHPExcel\Style\Alignment.php';
 
 use Duxingyu\Excel\Contracts\QueryDataInterface;
 

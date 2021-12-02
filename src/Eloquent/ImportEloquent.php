@@ -11,6 +11,7 @@ use PHPExcel_Cell;
 use PHPExcel_Exception;
 use PHPExcel_IOFactory;
 use PHPExcel_Reader_Exception;
+use PHPExcel_Style_Alignment;
 use PHPExcel_Writer_Exception;
 
 /**
@@ -84,10 +85,7 @@ abstract class ImportEloquent implements QueryDataInterface, StorageDataInterfac
             $key += 1;
             $value = array_values($value);
             for ($i = 0; $i < $keyIndex; $i++) {
-                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i])->getStyle($this->letter[$i] . $key)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER)->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             }
         }
         $objPHPExcel->getActiveSheet()->setTitle('错误数据');
