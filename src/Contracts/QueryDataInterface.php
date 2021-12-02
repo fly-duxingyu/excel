@@ -7,5 +7,9 @@ namespace Duxingyu\Excel\Contracts;
  */
 interface QueryDataInterface
 {
+    /**
+     * 获取导出数据
+     * @return mixed
+     */
     public function getData();
 }

@@ -23,7 +23,12 @@ class Data extends ExportEloquent
         ];
     }
 
-    protected function setHeader(): array
+    public function excelPath()
+    {
+        return __DIR__ . '/ss/1.xlsx';
+    }
+
+    public function header()
     {
         return [
             'id' => "ID",
@@ -31,15 +36,5 @@ class Data extends ExportEloquent
             'name' => "姓名",
             'phone' => "电话",
         ];
-    }
-
-    public function setExcelName()
-    {
-        return '测试文件';
-    }
-
-    public function setPath()
-    {
-        return __DIR__ . '\ss';
     }
 }

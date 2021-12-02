@@ -24,8 +24,21 @@ class ExcelEloquent
         $this->object = $disposeData;
     }
 
-    public function execute()
+    /**
+     * 执行导出
+     * @return mixed
+     */
+    public function downExcel()
     {
-        return $this->object->executeData();
+        return $this->object->executeExportData();
+    }
+
+    /**
+     * 执行导入
+     * @return mixed
+     */
+    public function importExcel()
+    {
+        return $this->object->executeImportData();
     }
 }

@@ -5,7 +5,7 @@ use Duxingyu\Excel\Eloquent\ImportEloquent;
 
 class Data1 extends ImportEloquent
 {
-    protected function setHeader(): array
+    public function header()
     {
         return [
             'id' => "ID",
@@ -15,13 +15,28 @@ class Data1 extends ImportEloquent
         ];
     }
 
-    public function setExcelName()
+    public function excelPath()
     {
-        return '测试文件';
+        return 'D:/phpstudy_pro/WWW/excel/test/excel.xlsx';
     }
 
-    public function setPath()
+    public function saveData($data)
     {
-        return __DIR__ . '\ss';
+    }
+
+    public function checkData($data, &$correctData, &$errorData)
+    {
+        foreach ($data as $item) {
+            if (empty($item)) {
+                $errorData[] = $item;
+                continue;
+            }
+            if (!is_numeric($item['id'])) {
+                $item['error_message']='id必须是数字';
+                $errorData[] = $item;
+                continue;
+            }
+            $correctData[] = $item;
+        }
     }
 }

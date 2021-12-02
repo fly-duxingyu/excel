@@ -2,38 +2,40 @@
 
 namespace Duxingyu\Excel\Eloquent;
 
+use Duxingyu\Excel\Contracts\ExcelHeaderInterface;
 use Duxingyu\Excel\Contracts\QueryDataInterface;
+use Duxingyu\Excel\Contracts\SaveDataInterface;
 use Duxingyu\Excel\Contracts\StorageDataInterface;
 use PHPExcel;
 use PHPExcel_Cell;
+use PHPExcel_Exception;
 use PHPExcel_IOFactory;
+use PHPExcel_Reader_Exception;
+use PHPExcel_Writer_Exception;
 
 /**
  *导入
  */
-abstract class ImportEloquent implements QueryDataInterface, StorageDataInterface
+abstract class ImportEloquent implements QueryDataInterface, StorageDataInterface, ExcelHeaderInterface, SaveDataInterface
 {
-    /**
-     * 设置导出数据头
-     * @return array
-     */
-    abstract protected function setHeader(): array;
+    public $letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
     /**
-     * 获取excel头部
+     * 读取excel表格
      * @return array
+     * @throws PHPExcel_Exception
+     * @throws PHPExcel_Reader_Exception
      */
-    protected function getHeader()
+    final public function getData()
     {
-        return $this->setHeader();
-    }
-
-    public function getData()
-    {
-        $header = $this->getHeader();
+        $path = $this->excelPath();
+        if (!file_exists($path)) {
+            throw new \Exception('导入文件地址不存在');
+        }
+        $header = $this->header();
         $header = array_flip($header);
         $reader = PHPExcel_IOFactory::createReader('Excel2007'); //设置以Excel5格式(Excel97-2003工作簿)
-        $PHPExcel = $reader->load("D:/phpstudy_pro/WWW/excel/test/excel.xlsx"); // 载入excel文件
+        $PHPExcel = $reader->load($path); // 载入excel文件
         $sheet = $PHPExcel->getSheet(0); // 读取第一個工作表
         $highestRow = $sheet->getHighestRow(); // 取得总行数
         $highestColumm = $sheet->getHighestColumn(); // 取得总列数
@@ -61,54 +63,66 @@ abstract class ImportEloquent implements QueryDataInterface, StorageDataInterfac
         return $initData;
     }
 
-    public function executeData()
+    /**
+     * 写入错误数据
+     * @param $errorData
+     * @return string
+     * @throws PHPExcel_Exception
+     * @throws PHPExcel_Reader_Exception
+     * @throws PHPExcel_Writer_Exception
+     */
+    final protected function writeExcel($errorData)
     {
-        echo md5('scjpf'.'cKPpgoQcfYcN1sMrTPich6wwArxJLi7F1638348748');die();
-        echo '<pre>';
-        try {
-            $data = $this->getData();
-            print_r($data);die();
-            $header = $this->getHeader();
-            $excelName = $this->getExcelName();
-            $path = $this->getPath();
-            array_unshift($data, $header);
-            $date = "_" . date("Ymd") . uniqid();
-            $fileName = $excelName . $date . ".xlsx";
-            $objPHPExcel = new PHPExcel();
-            $keyIndex = count(reset($data));
-            foreach ($data as $key => $value) {
-                $key += 1;
-                $value = array_values($value);
-                for ($i = 0; $i < $keyIndex; $i++) {
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
-                }
+        $header = $this->header();
+        $header['error_message'] = '错误描述';
+        $path = $this->excelPath();
+        $path = mb_substr($path, 0, strripos($path, '.')) . '错误数据.xlsx';
+        array_unshift($errorData, $header);
+        $objPHPExcel = new PHPExcel();
+        $keyIndex = count(reset($errorData));
+        foreach ($errorData as $key => $value) {
+            $key += 1;
+            $value = array_values($value);
+            for ($i = 0; $i < $keyIndex; $i++) {
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($this->letter[$i] . $key, $value[$i]);
             }
-            $objPHPExcel->getActiveSheet()->setTitle('导出');
-            $objPHPExcel->setActiveSheetIndex(0);
-            ob_end_clean();//清除缓冲区,避免乱码
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $pathName = $path . "\\" . $fileName;
-            $objWriter->save($pathName);
+        }
+        $objPHPExcel->getActiveSheet()->setTitle('错误数据');
+        $objPHPExcel->setActiveSheetIndex(0);
+        ob_end_clean();//清除缓冲区,避免乱码
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($path);
+        return $path;
+    }
+
+    /**
+     * 导入执行逻辑
+     * @return array
+     */
+    final public function executeImportData()
+    {
+        try {
+            //读取excel数据
+            $data = $this->getData();
+            $this->checkData($data, $correctData, $errorData);
+            $path = $this->writeExcel($errorData);
+            $this->saveData($correctData);
             return [
                 'status' => 'ok',
-                'message' => '导出成功',
-                'data' => [
-                    'full_path' => $pathName,
-                    'file_name' => $fileName,
-                    'path' => $path,
-                ]];
+                'message' => '导入成功',
+                'detail_message' => '',
+                'path' => $path
+            ];
         } catch (\Exception  $exception) {
             return [
                 'status' => 'no',
-                'message' => $exception->getMessage(),
-                'data' => [
-                    'full_path' => '',
-                    'file_name' => '',
-                    'path' => '',
-                ]];
+                'message' => '导入失败',
+                'detail_message' => $exception->getMessage(),
+                'path' => $this->excelPath()
+            ];
         }
     }
 }
