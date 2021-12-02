@@ -93,7 +93,7 @@ abstract class ImportEloquent implements QueryDataInterface, StorageDataInterfac
         ob_end_clean();//清除缓冲区,避免乱码
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         if (file_exists($path)) {
-            $path = mb_substr($this->excelPath(), 0, strripos($path, '.')) . uniqid() . '错误数据.xlsx';
+            $path = mb_substr($this->excelPath(), 0, strripos($this->excelPath(), '.')) . '错误数据' . uniqid() . '.xlsx';
         }
         $objWriter->save($path);
         return $path;
