@@ -29,6 +29,8 @@ abstract class ExportEloquent implements QueryDataInterface, StorageDataInterfac
             $header = $this->header();
             $path = $this->excelPath();
             array_unshift($data, $header);
+            $data = array_filter($data);
+            sort($data);
             $objPHPExcel = new PHPExcel();
             $keyIndex = count(reset($data));
             foreach ($data as $key => $value) {
